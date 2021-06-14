@@ -1,0 +1,26 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "variables": {
+    "apiManagementServiceName": "aaezemapimext"
+  },
+    "resources": [{
+        "name": "[concat(variables('apiManagementServiceName'), '/', 'Microsoft.Insights/service')]",
+        "type": "Microsoft.ApiManagement/service/providers/diagnosticSettings",
+        "apiVersion": "2017-05-01-preview",
+        "location": "eastus", 
+        "properties": {
+            "workspaceId": "/subscriptions/81db80c9-281c-z4197-bac5-61b1228e7bca/resourcegroups/defaultresourcegroup-eus/providers/microsoft.operationalinsights/workspaces/defaultworkspace-81db80c9-281c-4197-bac5-61b1228e7bca-eus",
+            "logs": [{
+                    "category": "GatewayLogs",
+                    "enabled": true
+                }
+            ],
+            "metrics": [{
+                    "category": "AllMetrics",
+                    "enabled": true                
+                }
+            ]
+        }
+     }]
+}

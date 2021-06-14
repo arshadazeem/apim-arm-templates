@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ApimServiceName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "properties": {
+        "displayName": "pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/createPets/pets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+      "apiVersion": "2019-01-01",
+      "dependsOn": []
+    },
+    {
+      "properties": {
+        "displayName": "pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/showPetById/pets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations/tags', parameters('ApimServiceName'), 'swagger-petstore', 'createPets', 'pets')]"
+      ]
+    },
+    {
+      "properties": {
+        "displayName": "pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/listPets/pets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations/tags', parameters('ApimServiceName'), 'swagger-petstore', 'showPetById', 'pets')]"
+      ]
+    }
+  ]
+}

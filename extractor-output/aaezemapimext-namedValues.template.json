@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ApimServiceName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "properties": {
+        "secret": true,
+        "displayName": "Logger-Credentials--60b661284634610c3c3c8697",
+        "value": "10a73298-9b6c-4e5c-ae89-a2f7289b2b04"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/60b661284634610c3c3c8696')]",
+      "type": "Microsoft.ApiManagement/service/properties",
+      "apiVersion": "2019-01-01"
+    }
+  ]
+}

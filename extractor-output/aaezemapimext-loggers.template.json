@@ -1,0 +1,33 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ApimServiceName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "properties": {
+        "loggerType": "applicationInsights",
+        "credentials": {
+          "instrumentationKey": "{{Logger-Credentials--60b661284634610c3c3c8697}}"
+        },
+        "isBuffered": true,
+        "resourceId": "/subscriptions/81db80c9-281c-4197-bac5-61b1228e7bca/resourceGroups/experiments/providers/microsoft.insights/components/testcustomevents"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/testcustomevents')]",
+      "type": "Microsoft.ApiManagement/service/loggers",
+      "apiVersion": "2019-01-01"
+    },
+    {
+      "properties": {
+        "loggerType": "azureMonitor",
+        "isBuffered": true
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/azuremonitor')]",
+      "type": "Microsoft.ApiManagement/service/loggers",
+      "apiVersion": "2019-01-01"
+    }
+  ]
+}

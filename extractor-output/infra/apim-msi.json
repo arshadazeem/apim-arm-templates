@@ -1,0 +1,111 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+        "apimInstanceName": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "The name of the APIM Instance"
+            }
+        },
+
+        "publisherEmail": {
+            "type": "string",
+            "defaultValue": "arazeem@microsoft.com",
+            "minLength": 1,
+            "metadata": {
+                "description": "The email address of the owner of the service"
+            }
+        },
+        "publisherName": {
+            "type": "string",
+            "defaultValue": "Contoso",
+            "minLength": 1,
+            "metadata": {
+                "description": "The name of the owner of the service"
+            }
+        },
+        "sku": {
+            "type": "string",
+            "allowedValues": ["Developer",
+            "Standard",
+            "Premium"],
+            "defaultValue": "Developer",
+            "metadata": {
+                "description": "The pricing tier of this API Management instance"
+            }
+        },
+        "skuCount": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "The instance size of this API Management instance."
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "defaultValue": "aazeemkeyvault",
+            "metadata": {
+                "description": "Name of the vault"
+            }
+        },
+        "proxyCustomHostname1": {
+            "type": "string",
+            "defaultValue": "apimone.arazeem.com",
+            "metadata": {
+                "description": "Proxy Custom hostname."
+            }
+        },
+        "keyVaultIdToCertificate": {
+            "type": "string",
+            "defaultValue": "https://aazeemkeyvault.vault.azure.net/secrets/apimone",
+            "metadata": {
+                "description": "Reference to the Key Vault certificate. https://contoso.vault.azure.net/secrets/contosogatewaycertificate."
+            }
+        }
+    },
+    "variables": {
+        "apiManagementServiceName": "[parameters('apimInstanceName')]",
+        "apimServiceIdentityResourceId": "[concat(resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName')),'/providers/Microsoft.ManagedIdentity/Identities/default')]"
+    },
+    "resources": [{
+        "apiVersion": "2019-01-01",
+        "name": "[variables('apiManagementServiceName')]",
+        "type": "Microsoft.ApiManagement/service",
+        "location": "[resourceGroup().location]",
+        "tags": {
+        },
+        "sku": {
+            "name": "[parameters('sku')]",
+            "capacity": "[parameters('skuCount')]"
+        },
+        "properties": {
+            "publisherEmail": "[parameters('publisherEmail')]",
+            "publisherName": "[parameters('publisherName')]"
+        },
+        "identity": {
+            "type": "systemAssigned"
+        }
+    },
+    {
+        "type": "Microsoft.KeyVault/vaults/accessPolicies",
+        "name": "[concat(parameters('keyVaultName'), '/add')]",
+        "apiVersion": "2015-06-01",
+        "dependsOn": [
+            "[resourceId('Microsoft.ApiManagement/service', variables('apiManagementServiceName'))]"
+        ],
+        "properties": {
+            "accessPolicies": [{
+                "tenantId": "[reference(variables('apimServiceIdentityResourceId'), '2015-08-31-PREVIEW').tenantId]",
+                "objectId": "[reference(variables('apimServiceIdentityResourceId'), '2015-08-31-PREVIEW').principalId]",
+                "permissions": {
+                    "secrets": ["get"],
+                    "certificates": ["get"]
+                }
+            }]
+        }
+    }
+    ]
+}

@@ -1,0 +1,619 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ApimServiceName": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "properties": {
+        "authenticationSettings": {
+          "subscriptionKeyRequired": false
+        },
+        "subscriptionKeyParameterNames": {
+          "header": "Ocp-Apim-Subscription-Key",
+          "query": "subscription-key"
+        },
+        "apiRevision": "1",
+        "isCurrent": true,
+        "subscriptionRequired": true,
+        "displayName": "Echo API",
+        "serviceUrl": "http://echoapi.cloudapp.net/api",
+        "path": "echo",
+        "protocols": [
+          "https"
+        ]
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api')]",
+      "type": "Microsoft.ApiManagement/service/apis",
+      "apiVersion": "2019-01-01",
+      "dependsOn": []
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "A demonstration of a POST call based on the echo backend above. The request body is expected to contain JSON-formatted data (see example below). A policy is used to automatically transform any request sent in JSON directly to XML. In a real-world scenario this could be used to enable modern clients to speak to a legacy backend.",
+        "request": {
+          "queryParameters": [],
+          "headers": [],
+          "representations": [
+            {
+              "contentType": "application/json",
+              "sample": "{\r\n\t\"vehicleType\": \"train\",\r\n\t\"maxSpeed\": 125,\r\n\t\"avgSpeed\": 90,\r\n\t\"speedUnit\": \"mph\"\r\n}"
+            }
+          ]
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "headers": [],
+            "representations": []
+          }
+        ],
+        "displayName": "Create resource",
+        "method": "POST",
+        "urlTemplate": "/resource"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/create-resource')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "properties": {
+        "value": "<policies>\r\n\t<inbound>\r\n\t\t<base />\r\n\t\t<json-to-xml apply=\"always\" consider-accept-header=\"false\" />\r\n\t</inbound>\r\n\t<backend>\r\n\t\t<base />\r\n\t</backend>\r\n\t<outbound>\r\n\t\t<base />\r\n\t</outbound>\r\n</policies>",
+        "format": "rawxml"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/create-resource/policy')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'echo-api', 'create-resource')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "A demonstration of a PUT call handled by the same \"echo\" backend as above. You can now specify a request body in addition to headers and it will be returned as well.",
+        "request": {
+          "queryParameters": [],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "headers": [],
+            "representations": []
+          }
+        ],
+        "displayName": "Modify Resource",
+        "method": "PUT",
+        "urlTemplate": "/resource"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/modify-resource')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "A demonstration of a DELETE call which traditionally deletes the resource. It is based on the same \"echo\" backend as in all other operations so nothing is actually deleted.",
+        "request": {
+          "queryParameters": [],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "headers": [],
+            "representations": []
+          }
+        ],
+        "displayName": "Remove resource",
+        "method": "DELETE",
+        "urlTemplate": "/resource"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/remove-resource')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "The HEAD operation returns only headers. In this demonstration a policy is used to set additional headers when the response is returned and to enable JSONP.",
+        "request": {
+          "queryParameters": [],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "headers": [],
+            "representations": []
+          }
+        ],
+        "displayName": "Retrieve header only",
+        "method": "HEAD",
+        "urlTemplate": "/resource"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/retrieve-header-only')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "properties": {
+        "value": "<policies>\r\n\t<inbound>\r\n\t\t<base />\r\n\t</inbound>\r\n\t<backend>\r\n\t\t<base />\r\n\t</backend>\r\n\t<outbound>\r\n\t\t<base />\r\n\t\t<set-header name=\"X-My-Sample\" exists-action=\"override\">\r\n\t\t\t<value>This is a sample</value>\r\n\t\t\t<!-- for multiple headers with the same name add additional value elements -->\r\n\t\t</set-header>\r\n\t\t<jsonp callback-parameter-name=\"ProcessResponse\" />\r\n\t</outbound>\r\n</policies>",
+        "format": "rawxml"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/retrieve-header-only/policy')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'echo-api', 'retrieve-header-only')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "A demonstration of a GET call on a sample resource. It is handled by an \"echo\" backend which returns a response equal to the request (the supplied headers and body are being returned as received).",
+        "request": {
+          "queryParameters": [
+            {
+              "name": "param1",
+              "description": "A sample parameter that is required and has a default value of \"sample\".",
+              "type": "string",
+              "defaultValue": "sample",
+              "required": true,
+              "values": [
+                "sample"
+              ]
+            },
+            {
+              "name": "param2",
+              "description": "Another sample parameter, set to not required.",
+              "type": "number",
+              "required": false,
+              "values": []
+            }
+          ],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "description": "Returned in all cases.",
+            "headers": [],
+            "representations": []
+          }
+        ],
+        "displayName": "Retrieve resource",
+        "method": "GET",
+        "urlTemplate": "/resource"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/retrieve-resource')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "A demonstration of a GET call with caching enabled on the same \"echo\" backend as above. Cache TTL is set to 1 hour. When you make the first request the headers you supplied will be cached. Subsequent calls will return the same headers as the first time even if you change them in your request.",
+        "request": {
+          "queryParameters": [
+            {
+              "name": "param1",
+              "description": "A sample parameter that is required and has a default value of \"sample\".",
+              "type": "string",
+              "defaultValue": "sample",
+              "required": true,
+              "values": [
+                "sample"
+              ]
+            },
+            {
+              "name": "param2",
+              "description": "Another sample parameter, set to not required.",
+              "type": "string",
+              "required": false,
+              "values": []
+            }
+          ],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "headers": [],
+            "representations": []
+          }
+        ],
+        "displayName": "Retrieve resource (cached)",
+        "method": "GET",
+        "urlTemplate": "/resource-cached"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/retrieve-resource-cached')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "properties": {
+        "value": "<policies>\r\n\t<inbound>\r\n\t\t<base />\r\n\t\t<cache-lookup vary-by-developer=\"false\" vary-by-developer-groups=\"false\">\r\n\t\t\t<vary-by-header>Accept</vary-by-header>\r\n\t\t\t<vary-by-header>Accept-Charset</vary-by-header>\r\n\t\t</cache-lookup>\r\n\t\t<rewrite-uri template=\"/resource\" />\r\n\t</inbound>\r\n\t<backend>\r\n\t\t<base />\r\n\t</backend>\r\n\t<outbound>\r\n\t\t<base />\r\n\t\t<cache-store duration=\"3600\" />\r\n\t</outbound>\r\n</policies>",
+        "format": "rawxml"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/echo-api/retrieve-resource-cached/policy')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/policies",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'echo-api', 'retrieve-resource-cached')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('ApimServiceName'), '/starter/echo-api')]",
+      "type": "Microsoft.ApiManagement/service/products/apis",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "name": "[concat(parameters('ApimServiceName'), '/unlimited/echo-api')]",
+      "type": "Microsoft.ApiManagement/service/products/apis",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'echo-api')]"
+      ]
+    },
+    {
+      "properties": {
+        "authenticationSettings": {
+          "subscriptionKeyRequired": false
+        },
+        "subscriptionKeyParameterNames": {
+          "header": "Ocp-Apim-Subscription-Key",
+          "query": "subscription-key"
+        },
+        "apiRevision": "1",
+        "isCurrent": true,
+        "subscriptionRequired": true,
+        "displayName": "Swagger Petstore",
+        "serviceUrl": "http://petstore.swagger.io/v1",
+        "path": "",
+        "protocols": [
+          "https"
+        ]
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore')]",
+      "type": "Microsoft.ApiManagement/service/apis",
+      "apiVersion": "2019-01-01",
+      "dependsOn": []
+    },
+    {
+      "properties": {
+        "contentType": "application/vnd.oai.openapi.components+json",
+        "document": {
+          "components": {
+            "schemas": {
+              "Pet": {
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer",
+                    "format": "int64"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "tag": {
+                    "type": "string"
+                  }
+                }
+              },
+              "Pets": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Pet"
+                }
+              },
+              "Error": {
+                "required": [
+                  "code",
+                  "message"
+                ],
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              },
+              "PetsGetRequest": {
+                "format": "int32",
+                "x-apim-inline": true
+              },
+              "PetsGet200x-nextResponseHeader": {
+                "x-apim-inline": true
+              },
+              "Pets-petId-GetRequest": {
+                "x-apim-inline": true
+              }
+            }
+          }
+        }
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/60b976314634610c3c3c869b')]",
+      "type": "Microsoft.ApiManagement/service/apis/schemas",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'swagger-petstore')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "Create a pet",
+        "request": {
+          "queryParameters": [],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 201,
+            "description": "Null response",
+            "headers": [],
+            "representations": []
+          },
+          {
+            "statusCode": 400,
+            "description": "unexpected error",
+            "headers": [],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "{\r\n  \"code\": 0,\r\n  \"message\": \"string\"\r\n}",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Error"
+              }
+            ]
+          },
+          {
+            "statusCode": 500,
+            "description": "unexpected error",
+            "headers": [],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "{\r\n  \"code\": 0,\r\n  \"message\": \"string\"\r\n}",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Error"
+              }
+            ]
+          }
+        ],
+        "displayName": "Create a pet",
+        "method": "POST",
+        "urlTemplate": "/pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/createPets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'swagger-petstore')]",
+        "[resourceId('Microsoft.ApiManagement/service/apis/schemas', parameters('ApimServiceName'), 'swagger-petstore', '60b976314634610c3c3c869b')]"
+      ]
+    },
+    {
+      "properties": {
+        "displayName": "pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/createPets/pets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'swagger-petstore', 'createPets')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [
+          {
+            "name": "petId",
+            "description": "The id of the pet to retrieve",
+            "type": "string",
+            "required": true,
+            "values": []
+          }
+        ],
+        "description": "Info for a specific pet",
+        "request": {
+          "queryParameters": [],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "description": "Expected response to a valid request",
+            "headers": [],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "{\r\n  \"id\": 0,\r\n  \"name\": \"string\",\r\n  \"tag\": \"string\"\r\n}",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Pet"
+              }
+            ]
+          },
+          {
+            "statusCode": 400,
+            "description": "unexpected error",
+            "headers": [],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "{\r\n  \"code\": 0,\r\n  \"message\": \"string\"\r\n}",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Error"
+              }
+            ]
+          },
+          {
+            "statusCode": 500,
+            "description": "unexpected error",
+            "headers": [],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "{\r\n  \"code\": 0,\r\n  \"message\": \"string\"\r\n}",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Error"
+              }
+            ]
+          }
+        ],
+        "displayName": "Info for a specific pet",
+        "method": "GET",
+        "urlTemplate": "/pets/{petId}"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/showPetById')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'swagger-petstore')]",
+        "[resourceId('Microsoft.ApiManagement/service/apis/schemas', parameters('ApimServiceName'), 'swagger-petstore', '60b976314634610c3c3c869b')]"
+      ]
+    },
+    {
+      "properties": {
+        "displayName": "pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/showPetById/pets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'swagger-petstore', 'showPetById')]"
+      ]
+    },
+    {
+      "properties": {
+        "templateParameters": [],
+        "description": "List all pets",
+        "request": {
+          "queryParameters": [
+            {
+              "name": "limit",
+              "description": "Format - int32. How many items to return at one time (max 100)",
+              "type": "integer",
+              "required": false,
+              "values": []
+            }
+          ],
+          "headers": [],
+          "representations": []
+        },
+        "responses": [
+          {
+            "statusCode": 200,
+            "description": "A paged array of pets",
+            "headers": [
+              {
+                "name": "x-next",
+                "description": "A link to the next page of responses",
+                "type": "string",
+                "required": false,
+                "values": []
+              }
+            ],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "[[\r\n  {\r\n    \"id\": 0,\r\n    \"name\": \"string\",\r\n    \"tag\": \"string\"\r\n  }\r\n]",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Pets"
+              }
+            ]
+          },
+          {
+            "statusCode": 400,
+            "description": "unexpected error",
+            "headers": [],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "{\r\n  \"code\": 0,\r\n  \"message\": \"string\"\r\n}",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Error"
+              }
+            ]
+          },
+          {
+            "statusCode": 500,
+            "description": "unexpected error",
+            "headers": [],
+            "representations": [
+              {
+                "contentType": "application/json",
+                "sample": "{\r\n  \"code\": 0,\r\n  \"message\": \"string\"\r\n}",
+                "schemaId": "60b976314634610c3c3c869b",
+                "typeName": "Error"
+              }
+            ]
+          }
+        ],
+        "displayName": "List all pets",
+        "method": "GET",
+        "urlTemplate": "/pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/listPets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis', parameters('ApimServiceName'), 'swagger-petstore')]",
+        "[resourceId('Microsoft.ApiManagement/service/apis/schemas', parameters('ApimServiceName'), 'swagger-petstore', '60b976314634610c3c3c869b')]"
+      ]
+    },
+    {
+      "properties": {
+        "displayName": "pets"
+      },
+      "name": "[concat(parameters('ApimServiceName'), '/swagger-petstore/listPets/pets')]",
+      "type": "Microsoft.ApiManagement/service/apis/operations/tags",
+      "apiVersion": "2019-01-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service/apis/operations', parameters('ApimServiceName'), 'swagger-petstore', 'listPets')]"
+      ]
+    }
+  ]
+}

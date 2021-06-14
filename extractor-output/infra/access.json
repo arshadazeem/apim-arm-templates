@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {        
+        "keyVaultName": {
+            "type": "string",
+            "defaultValue": "aazeemkeyvault",
+            "metadata": {
+                "description": "Name of the vault"
+            }
+        },
+        "applicationId": {
+            "type": "string",                        
+            "defaultValue": "a388bb03-2de4-44d4-8b90-b4e7be87a5c6",
+            "metadata": {
+                "description": "application Id"
+            }
+        },
+        "certThumbPrint": {
+            "type": "string",                        
+            "defaultValue": "F037CC8D3C15547F23C93934A02D6880B2A64123",
+            "metadata": {
+                "description": "application Id"
+            }
+        }
+    },  
+    "resources": [
+      {
+        
+        "name": "[concat(parameters('keyVaultName'), '/add')]",
+        "type": "Microsoft.KeyVault/vaults/accessPolicies",        
+        "apiVersion": "2019-09-01",     
+        "properties": {
+            "accessPolicies": [{
+                "tenantId": "[subscription().tenantId]",
+                "ObjectId": "[parameters('applicationId')]",                
+                "permissions": {
+                    "secrets": ["all"],
+                    "certificates": ["all"],
+                    "keys": ["all"]
+                }
+            }]
+          }
+        },
+
+        {
+            "type": "Microsoft.KeyVault/vaults/keys",
+            "apiVersion": "2019-09-01",
+            "name": "[concat(parameters('keyVaultName'), '/key1-from-arm')]",
+            "location": "eastus",            
+            "properties": {
+                "kty": "RSA",
+                "keySize": 2048,
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2021-04-01-preview",
+            "name": "[concat(parameters('keyVaultName'), '/apimext')]",
+            "location": "eastus",            
+            "properties": {
+                "contentType": "application/x-pkcs12",
+                "value": "[parameters('certThumbPrint')]",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2021-04-01-preview",
+            "name": "[concat(parameters('keyVaultName'), '/sec1-from-arm')]",
+            "location": "eastus",           
+            "properties": {
+                "value": "mysecretvalue",
+                "attributes": {
+                    "enabled": true
+                }
+            }
+        }
+
+    ]
+}

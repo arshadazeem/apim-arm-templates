@@ -1,0 +1,6 @@
+{
+    "sourceApimName": "aaezemapimext",
+    "destinationApimName": "aazeem-extracted-apim",
+    "resourceGroup": "apim-rg",
+    "fileFolder": "C:\\dev\\apim"
+}
