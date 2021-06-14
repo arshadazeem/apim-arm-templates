@@ -4,23 +4,30 @@
     "parameters": {        
         "keyVaultName": {
             "type": "string",
-            "defaultValue": "aazeemkeyvault",
+            "defaultValue": "myakv",
             "metadata": {
                 "description": "Name of the vault"
             }
         },
         "applicationId": {
             "type": "string",                        
-            "defaultValue": "a388bb03-2de4-44d4-8b90-b4e7be87a5c6",
+            "defaultValue": "0000-1111-333-2222-555",
             "metadata": {
                 "description": "application Id"
             }
         },
-        "certThumbPrint": {
+        "certPassword": {
             "type": "string",                        
-            "defaultValue": "F037CC8D3C15547F23C93934A02D6880B2A64123",
+            "defaultValue": "Password1$",
             "metadata": {
-                "description": "application Id"
+                "description": "Password for the private cert"
+            }
+        },
+        "base64PvtCert": {
+            "type": "string",                        
+            "defaultValue": "",
+            "metadata": {
+                "description": "Base 64 value of the pfx cert (Looks like this isn't supported with ARM for AKV though)"
             }
         }
     },  
@@ -63,7 +70,8 @@
             "location": "eastus",            
             "properties": {
                 "contentType": "application/x-pkcs12",
-                "value": "[parameters('certThumbPrint')]",
+                "value": "[parameters('base64PvtCert')]",
+                "pwd": "[parameters('certPassword')]",
                 "attributes": {
                     "enabled": true
                 }
