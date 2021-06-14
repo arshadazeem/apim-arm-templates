@@ -53,14 +53,14 @@
         },
         "proxyCustomHostname1": {
             "type": "string",
-            "defaultValue": "apimone.arazeem.com",
+            "defaultValue": "apimext.arazeem.com",
             "metadata": {
                 "description": "Proxy Custom hostname."
             }
         },
         "keyVaultIdToCertificate": {
             "type": "string",
-            "defaultValue": "https://aazeemkeyvault.vault.azure.net/secrets/apimone",
+            "defaultValue": "https://aazeemkeyvault.vault.azure.net/secrets/apimexternal",
             "metadata": {
                 "description": "Reference to the Key Vault certificate. https://contoso.vault.azure.net/secrets/contosogatewaycertificate."
             }

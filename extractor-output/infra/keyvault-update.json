@@ -4,14 +4,14 @@
     "parameters": {        
         "keyVaultName": {
             "type": "string",
-            "defaultValue": "myakv",
+            "defaultValue": "aazeemkeyvault",
             "metadata": {
                 "description": "Name of the vault"
             }
         },
         "applicationId": {
             "type": "string",                        
-            "defaultValue": "0000-1111-333-2222-555",
+            "defaultValue": "a388bb03-2de4-44d4-8b90-b4e7be87a5c6",
             "metadata": {
                 "description": "application Id"
             }
@@ -22,14 +22,8 @@
             "metadata": {
                 "description": "Password for the private cert"
             }
-        },
-        "base64PvtCert": {
-            "type": "string",                        
-            "defaultValue": "",
-            "metadata": {
-                "description": "Base 64 value of the pfx cert (Looks like this isn't supported with ARM for AKV though)"
-            }
         }
+        
     },  
     "resources": [
       {
@@ -89,6 +83,8 @@
                 }
             }
         }
+
+
 
     ]
 }

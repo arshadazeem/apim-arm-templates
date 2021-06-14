@@ -50,21 +50,8 @@
             "metadata": {
                 "description": "Name of the vault"
             }
-        },
-        "proxyCustomHostname1": {
-            "type": "string",
-            "defaultValue": "apimone.arazeem.com",
-            "metadata": {
-                "description": "Proxy Custom hostname."
-            }
-        },
-        "keyVaultIdToCertificate": {
-            "type": "string",
-            "defaultValue": "https://aazeemkeyvault.vault.azure.net/secrets/apimone",
-            "metadata": {
-                "description": "Reference to the Key Vault certificate. https://contoso.vault.azure.net/secrets/contosogatewaycertificate."
-            }
-        }
+        }      
+
     },
     "variables": {
         "apiManagementServiceName": "[parameters('apimInstanceName')]",
@@ -107,5 +94,6 @@
             }]
         }
     }
+
     ]
 }
